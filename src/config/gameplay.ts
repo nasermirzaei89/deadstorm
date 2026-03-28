@@ -1,6 +1,6 @@
 export const GAMEPLAY = {
     debug: {
-        showCollisionBoxes: true
+        showCollisionBoxes: false
     },
     player: {
         speed: 500,
@@ -23,7 +23,7 @@ export const GAMEPLAY = {
     },
     bullets: {
         count: 3,
-        speed: 100,
+        speed: 200,
         cooldown: 300,
         maxInGame: 100,
         despawnBuffer: 160,
@@ -47,7 +47,7 @@ export const GAMEPLAY = {
         },
         enemyTypes: {
             enemy1: {
-                speed: 9,
+                speed: 90,
                 maxHealth: 30,
                 damage: 8,
                 scaleFactor: -2,
@@ -55,7 +55,7 @@ export const GAMEPLAY = {
                 body: { shape: 'circle' }
             },
             enemy2: {
-                speed: 7,
+                speed: 70,
                 maxHealth: 50,
                 damage: 12,
                 scaleFactor: -2,
@@ -63,7 +63,7 @@ export const GAMEPLAY = {
                 body: { shape: 'circle' }
             },
             enemy3: {
-                speed: 5.5,
+                speed: 55,
                 maxHealth: 80,
                 damage: 16,
                 scaleFactor: -2,

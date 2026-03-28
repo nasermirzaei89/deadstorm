@@ -12,8 +12,9 @@ export class CollidableBody {
             return;
         }
 
-        const baseWidth = this.owner.width;
-        const baseHeight = this.owner.height;
+        const frame = this.owner?.frame;
+        const baseWidth = frame?.realWidth ?? this.owner.width;
+        const baseHeight = frame?.realHeight ?? this.owner.height;
 
         switch (bodyConfig?.shape) {
             case 'circle': {

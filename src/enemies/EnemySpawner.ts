@@ -22,6 +22,8 @@ export class EnemySpawner {
         }));
 
         this.lastUpdateTime = null;
+        this.maxBurstsPerTick = Math.max(1, Number(this.config.maxBurstsPerTick ?? 8));
+        this.maxAccumulator = Math.max(1, Number(this.config.maxAccumulator ?? this.maxBurstsPerTick));
     }
 
     update(timeMs, showEnemyHealthBars) {
@@ -44,24 +46,44 @@ export class EnemySpawner {
 
             const state = this.entryStates[i];
             state.accumulator += deltaSeconds * entry.ratePerSecond;
+            state.accumulator = Math.min(state.accumulator, this.maxAccumulator);
 
-            while (state.accumulator >= 1) {
+            let burstsProcessed = 0;
+
+            while (state.accumulator >= 1 && burstsProcessed < this.maxBurstsPerTick) {
                 state.accumulator -= 1;
-                this.spawnBatch(entry, showEnemyHealthBars);
+
+                // If we're at capacity, discard backlog to avoid long catch-up loops.
+                if (!this.spawnBatch(entry, showEnemyHealthBars)) {
+                    state.accumulator = 0;
+                    break;
+                }
+
+                burstsProcessed += 1;
+            }
+
+            if (burstsProcessed >= this.maxBurstsPerTick && state.accumulator >= 1) {
+                state.accumulator = Math.min(state.accumulator, 1);
             }
         }
     }
 
     spawnBatch(entry, showEnemyHealthBars) {
+        if (!Array.isArray(entry.enemyPool) || entry.enemyPool.length === 0) {
+            return false;
+        }
+
         for (let i = 0; i < entry.countPerSpawn; i += 1) {
             if (!this.enemyManager.canSpawn()) {
-                return;
+                return false;
             }
 
             const enemyType = this.pickEnemyType(entry.enemyPool);
             const spawnPos = this.getSpawnPositionAroundView();
             this.enemyManager.spawnEnemy(enemyType, spawnPos.x, spawnPos.y, showEnemyHealthBars);
         }
+
+        return true;
     }
 
     pickEnemyType(pool) {

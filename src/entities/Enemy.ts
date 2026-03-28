@@ -28,6 +28,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.lastDamageAt = 0;
         this._bodyConfig = null;
         this._collidableBody = new CollidableBody(this);
+        this._chaseDirection = new Phaser.Math.Vector2(0, 0);
 
         this.healthBar = new HealthBar(scene, {
             ...GAMEPLAY.enemies.healthBar,
@@ -73,7 +74,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
             return;
         }
 
-        const direction = new Phaser.Math.Vector2(player.x - this.x, player.y - this.y);
+        const direction = this._chaseDirection;
+        direction.set(player.x - this.x, player.y - this.y);
 
         if (direction.lengthSq() > 0) {
             direction.normalize();
@@ -89,7 +91,6 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         }
 
         this.healthBar.setVisible(showHealthBar);
-        this.updateHealthBar();
     }
 
     setVisualTransform(scaleFactor: number, faceDirection = 1) {

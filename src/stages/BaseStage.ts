@@ -44,6 +44,7 @@ export class BaseStage extends Phaser.Scene {
             height: 24
         };
         this.gameOverShown = false;
+        this.inputDirection = new Phaser.Math.Vector2(0, 0);
     }
 
     // -------------------------------------------------------------------------
@@ -104,7 +105,8 @@ export class BaseStage extends Phaser.Scene {
             return;
         }
 
-        const direction = new Phaser.Math.Vector2(0, 0);
+        const direction = this.inputDirection;
+        direction.set(0, 0);
 
         if (this.cursors.left.isDown || this.wasd.left.isDown) {
             direction.x -= 1;
