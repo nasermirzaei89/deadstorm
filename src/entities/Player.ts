@@ -1,12 +1,12 @@
 import Phaser from 'phaser';
-import { GAMEPLAY } from '../config/gameplay';
-import { HealthBar } from '../ui/HealthBar';
+import { GAMEPLAY } from '@/config/gameplay';
+import { HealthBar } from '@/ui/HealthBar';
 import { CollidableBody } from './CollidableBody';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
     [key: string]: any;
 
-    constructor(scene, x, y, texture = 'player', options: any = {}) {
+    constructor(scene: Phaser.Scene, x: number, y: number, texture = 'player', options: any = {}) {
         super(scene, x, y, texture);
 
         scene.add.existing(this);
@@ -36,7 +36,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.healthBar.updatePosition(this.x, this.y);
     }
 
-    setVisualTransform(scaleFactor, faceDirection = 1) {
+    setVisualTransform(scaleFactor: number, faceDirection = 1) {
         const numericScale = Number.isFinite(scaleFactor) ? scaleFactor : 1;
         const normalizedScale = Math.max(0.01, Math.abs(numericScale));
         const signedScale = (numericScale < 0 ? -1 : 1) * normalizedScale;
@@ -55,7 +55,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    updateFromInput(direction) {
+    updateFromInput(direction: Phaser.Math.Vector2) {
         if (direction.lengthSq() > 0) {
             direction.normalize();
             this.updateFacing(direction);
@@ -65,11 +65,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.updateVisualFacing();
     }
 
-    applyMovement(direction) {
+    applyMovement(direction: Phaser.Math.Vector2) {
         this.setVelocity(direction.x * this.speed, direction.y * this.speed);
     }
 
-    updateFacing(direction) {
+    updateFacing(direction: Phaser.Math.Vector2) {
         this.facing.copy(direction);
     }
 
@@ -95,7 +95,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         return out;
     }
 
-    takeDamage(amount) {
+    takeDamage(amount: number) {
         if (!this.isAlive) {
             return;
         }
@@ -108,7 +108,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    heal(amount) {
+    heal(amount: number) {
         if (!this.isAlive) {
             return;
         }
@@ -117,7 +117,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.healthBar.setPercent(this.health / this.maxHealth);
     }
 
-    addXp(amount) {
+    addXp(amount: number) {
         if (amount <= 0) {
             return;
         }
@@ -147,9 +147,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.healthBar.updatePosition(anchorX, anchorY);
     }
 
-    destroy(fromScene) {
+    destroy(fromScene?: boolean) {
         this.healthBar.destroy();
         super.destroy(fromScene);
     }
-
 }

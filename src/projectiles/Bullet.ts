@@ -1,10 +1,10 @@
 import Phaser from 'phaser';
-import { CollidableBody } from '../entities/CollidableBody';
+import { CollidableBody } from '@/entities/CollidableBody';
 
 export class Bullet extends Phaser.Physics.Arcade.Image {
     [key: string]: any;
 
-    constructor(scene, x, y, texture = 'bullet', frame) {
+    constructor(scene: Phaser.Scene, x: number, y: number, texture = 'bullet', frame?: string | number) {
         super(scene, x, y, texture, frame);
 
         scene.add.existing(this);
@@ -23,7 +23,7 @@ export class Bullet extends Phaser.Physics.Arcade.Image {
         this._collidableBody = new CollidableBody(this);
     }
 
-    setVisualTransform(scaleFactor, faceDirection = 1) {
+    setVisualTransform(scaleFactor: number, faceDirection = 1) {
         const numericScale = Number.isFinite(scaleFactor) ? scaleFactor : 1;
         const normalizedScale = Math.max(0.01, Math.abs(numericScale));
         const signedScale = (numericScale < 0 ? -1 : 1) * normalizedScale;
@@ -42,7 +42,7 @@ export class Bullet extends Phaser.Physics.Arcade.Image {
         }
     }
 
-    activateFromPool(x, y, angle, speed, damage, pierce, scaleFactor = 1, faceDirection = 1, bodyConfig = null) {
+    activateFromPool(x: number, y: number, angle: number, speed: number, damage: number, pierce: number, scaleFactor = 1, faceDirection = 1, bodyConfig: any = null) {
         this._bodyConfig = bodyConfig;
         this.setActive(true);
         this.setVisible(true);
@@ -56,11 +56,11 @@ export class Bullet extends Phaser.Physics.Arcade.Image {
         this.hitEnemyIds.clear();
     }
 
-    canHitEnemy(enemyId) {
+    canHitEnemy(enemyId: number) {
         return !this.hitEnemyIds.has(enemyId);
     }
 
-    markEnemyHit(enemyId) {
+    markEnemyHit(enemyId: number) {
         this.hitEnemyIds.add(enemyId);
         this.pierce -= 1;
     }

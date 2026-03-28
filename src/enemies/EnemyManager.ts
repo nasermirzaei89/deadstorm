@@ -1,10 +1,10 @@
-import { Enemy } from '../entities/Enemy';
-import { GAMEPLAY } from '../config/gameplay';
+import { Enemy } from '@/entities/Enemy';
+import { GAMEPLAY } from '@/config/gameplay';
 
 export class EnemyManager {
     [key: string]: any;
 
-    constructor(scene, config: any = {}) {
+    constructor(scene: Phaser.Scene, config: any = {}) {
         this.scene = scene;
 
         const defaults = GAMEPLAY.enemies;

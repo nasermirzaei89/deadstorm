@@ -3,7 +3,7 @@ import Phaser from 'phaser';
 export class HealthBar {
     [key: string]: any;
 
-    constructor(scene, options: any = {}) {
+    constructor(scene: Phaser.Scene, options: any = {}) {
         this.scene = scene;
         this.minWidth = options.minWidth ?? 24;
         this.width = Math.max(options.width ?? 40, this.minWidth);
@@ -21,11 +21,11 @@ export class HealthBar {
         this.graphics.setVisible(this.visible);
     }
 
-    setWidth(width) {
+    setWidth(width: number) {
         this.width = Math.max(Math.round(width), this.minWidth);
     }
 
-    setPercent(value) {
+    setPercent(value: number) {
         const nextPercent = Phaser.Math.Clamp(value, 0, 1);
 
         if (nextPercent === this.percent) {
@@ -35,7 +35,7 @@ export class HealthBar {
         this.percent = nextPercent;
     }
 
-    setVisible(visible) {
+    setVisible(visible: boolean) {
         if (this.visible === visible) {
             return;
         }
@@ -44,7 +44,7 @@ export class HealthBar {
         this.graphics.setVisible(visible);
     }
 
-    updatePosition(x, y) {
+    updatePosition(x: number, y: number) {
         if (!this.visible) {
             return;
         }
@@ -72,5 +72,4 @@ export class HealthBar {
     destroy() {
         this.graphics.destroy();
     }
-
 }

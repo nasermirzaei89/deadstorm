@@ -1,10 +1,11 @@
 import Phaser from 'phaser';
-import { GAMEPLAY } from '../config/gameplay';
+import { GAMEPLAY } from '@/config/gameplay';
+import { EnemyManager } from './EnemyManager';
 
 export class EnemySpawner {
     [key: string]: any;
 
-    constructor(scene, enemyManager, config: any = {}) {
+    constructor(scene: Phaser.Scene, enemyManager: EnemyManager, config: any = {}) {
         this.scene = scene;
         this.enemyManager = enemyManager;
 

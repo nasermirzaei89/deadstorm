@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
-import { GAMEPLAY } from '../config/gameplay';
-import { Player } from '../entities/Player';
-import { BulletManager } from '../projectiles/BulletManager';
-import { EnemyManager } from '../enemies/EnemyManager';
-import { EnemySpawner } from '../enemies/EnemySpawner';
+import { GAMEPLAY } from '@/config/gameplay';
+import { Player } from '@/entities/Player';
+import { BulletManager } from '@/projectiles/BulletManager';
+import { EnemyManager } from '@/enemies/EnemyManager';
+import { EnemySpawner } from '@/enemies/EnemySpawner';
 
 export class BaseStage extends Phaser.Scene {
     [key: string]: any;

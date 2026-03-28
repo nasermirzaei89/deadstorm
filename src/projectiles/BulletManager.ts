@@ -1,11 +1,13 @@
 import Phaser from 'phaser';
-import { GAMEPLAY } from '../config/gameplay';
+import { GAMEPLAY } from '@/config/gameplay';
 import { Bullet } from './Bullet';
+import { Enemy } from '@/entities/Enemy';
+import { Player } from '@/entities/Player';
 
 export class BulletManager {
     [key: string]: any;
 
-    constructor(scene, config = {}, textureKey = 'bullet') {
+    constructor(scene: Phaser.Scene, config = {}, textureKey = 'bullet') {
         this.scene = scene;
         this.textureKey = textureKey;
         this.config = {
@@ -22,7 +24,7 @@ export class BulletManager {
         });
     }
 
-    update(time, player) {
+    update(time, player: Player) {
         if (time >= this.nextFireAt) {
             this.fireFromPlayer(player);
             this.nextFireAt = time + this.config.cooldown;
@@ -31,7 +33,7 @@ export class BulletManager {
         this.cullOutsideCamera();
     }
 
-    fireFromPlayer(player) {
+    fireFromPlayer(player: Player) {
         if (this.group.countActive(true) >= this.config.maxInGame) {
             return;
         }
@@ -72,7 +74,7 @@ export class BulletManager {
         }
     }
 
-    handleBulletEnemyOverlap(bullet, enemy) {
+    handleBulletEnemyOverlap(bullet: Bullet, enemy: Enemy) {
         if (!bullet.active || !enemy.active || !enemy.isAlive) {
             return false;
         }

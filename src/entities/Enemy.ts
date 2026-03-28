@@ -1,14 +1,15 @@
 import Phaser from 'phaser';
-import { HealthBar } from '../ui/HealthBar';
-import { GAMEPLAY } from '../config/gameplay';
+import { HealthBar } from '@/ui/HealthBar';
+import { GAMEPLAY } from '@/config/gameplay';
 import { CollidableBody } from './CollidableBody';
+import { Player } from './Player';
 
 let NEXT_ENEMY_ID = 1;
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
     [key: string]: any;
 
-    constructor(scene, x, y, texture = 'enemy1', frame) {
+    constructor(scene: Phaser.Scene, x: number, y: number, texture = 'enemy1', frame?: string | number) {
         super(scene, x, y, texture, frame);
 
         scene.add.existing(this);
@@ -39,7 +40,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.body.enable = false;
     }
 
-    activateFromPool(x, y, texture, config, showHealthBar = false) {
+    activateFromPool(x: number, y: number, texture: string, config: any, showHealthBar = false) {
         this.enemyId = NEXT_ENEMY_ID;
         NEXT_ENEMY_ID += 1;
 
@@ -67,7 +68,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.healthBar.setVisible(showHealthBar);
     }
 
-    updateChase(player, showHealthBar) {
+    updateChase(player: Player, showHealthBar: boolean) {
         if (!this.active || !this.isAlive) {
             return;
         }
@@ -91,7 +92,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.updateHealthBar();
     }
 
-    setVisualTransform(scaleFactor, faceDirection = 1) {
+    setVisualTransform(scaleFactor: number, faceDirection = 1) {
         const numericScale = Number.isFinite(scaleFactor) ? scaleFactor : 1;
         const normalizedScale = Math.max(0.01, Math.abs(numericScale));
         const signedScale = (numericScale < 0 ? -1 : 1) * normalizedScale;
@@ -119,7 +120,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         return true;
     }
 
-    takeDamage(amount) {
+    takeDamage(amount: number) {
         if (!this.active || !this.isAlive) {
             return false;
         }
@@ -156,7 +157,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.healthBar.updatePosition(anchorX, anchorY);
     }
 
-    destroy(fromScene) {
+    destroy(fromScene?: boolean) {
         this.healthBar.destroy();
         super.destroy(fromScene);
     }
