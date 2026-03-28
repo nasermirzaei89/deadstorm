@@ -1,6 +1,6 @@
 export const GAMEPLAY = {
     debug: {
-        showCollisionBoxes: false
+        showCollisionBoxes: false,
     },
     player: {
         speed: 500,
@@ -18,8 +18,8 @@ export const GAMEPLAY = {
             offsetY: 10,
             fillColor: 0x4caf50,
             backgroundColor: 0x163017,
-            borderColor: 0x0c1b0c
-        }
+            borderColor: 0x0c1b0c,
+        },
     },
     bullets: {
         count: 3,
@@ -31,7 +31,7 @@ export const GAMEPLAY = {
         damage: 20,
         scaleFactor: 1,
         pierce: 1,
-        body: { shape: 'circle', radiusFactor: 0.7 }
+        body: { shape: 'circle', radiusFactor: 0.7 },
     },
     enemies: {
         maxInGame: 100,
@@ -43,7 +43,7 @@ export const GAMEPLAY = {
             offsetY: 8,
             fillColor: 0xc0392b,
             backgroundColor: 0x2e0f0f,
-            borderColor: 0x200909
+            borderColor: 0x200909,
         },
         enemyTypes: {
             enemy1: {
@@ -52,7 +52,7 @@ export const GAMEPLAY = {
                 damage: 8,
                 scaleFactor: -2,
                 xpYield: 5,
-                body: { shape: 'circle' }
+                body: { shape: 'circle' },
             },
             enemy2: {
                 speed: 70,
@@ -60,7 +60,7 @@ export const GAMEPLAY = {
                 damage: 12,
                 scaleFactor: -2,
                 xpYield: 10,
-                body: { shape: 'circle' }
+                body: { shape: 'circle' },
             },
             enemy3: {
                 speed: 55,
@@ -68,9 +68,9 @@ export const GAMEPLAY = {
                 damage: 16,
                 scaleFactor: -2,
                 xpYield: 20,
-                body: { shape: 'circle' }
-            }
-        }
+                body: { shape: 'circle' },
+            },
+        },
     },
     spawner: {
         spawnMargin: 100,
@@ -80,29 +80,29 @@ export const GAMEPLAY = {
                 endAt: 70,
                 ratePerSecond: 0.9,
                 countPerSpawn: 1,
-                enemyPool: ['enemy1']
+                enemyPool: ['enemy1'],
             },
             {
                 startAt: 60,
                 endAt: 130,
                 ratePerSecond: 1.2,
                 countPerSpawn: 1,
-                enemyPool: ['enemy1', 'enemy2']
+                enemyPool: ['enemy1', 'enemy2'],
             },
             {
                 startAt: 120,
                 endAt: 190,
                 ratePerSecond: 1.5,
                 countPerSpawn: 2,
-                enemyPool: ['enemy1', 'enemy2']
+                enemyPool: ['enemy1', 'enemy2'],
             },
             {
                 startAt: 190,
                 endAt: 99999,
                 ratePerSecond: 1.8,
                 countPerSpawn: 2,
-                enemyPool: ['enemy1', 'enemy2', 'enemy3']
-            }
-        ]
-    }
+                enemyPool: ['enemy1', 'enemy2', 'enemy3'],
+            },
+        ],
+    },
 };

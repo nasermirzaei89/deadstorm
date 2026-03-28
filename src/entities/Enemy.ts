@@ -9,7 +9,13 @@ let NEXT_ENEMY_ID = 1;
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
     [key: string]: any;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, texture = 'enemy1', frame?: string | number) {
+    constructor(
+        scene: Phaser.Scene,
+        x: number,
+        y: number,
+        texture = 'enemy1',
+        frame?: string | number,
+    ) {
         super(scene, x, y, texture, frame);
 
         scene.add.existing(this);
@@ -33,7 +39,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.healthBar = new HealthBar(scene, {
             ...GAMEPLAY.enemies.healthBar,
             width: 34,
-            visible: false
+            visible: false,
         });
 
         this.setActive(false);
@@ -41,7 +47,13 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.body.enable = false;
     }
 
-    activateFromPool(x: number, y: number, texture: string, config: any, showHealthBar = false) {
+    activateFromPool(
+        x: number,
+        y: number,
+        texture: string,
+        config: any,
+        showHealthBar = false,
+    ) {
         this.enemyId = NEXT_ENEMY_ID;
         NEXT_ENEMY_ID += 1;
 
@@ -79,14 +91,16 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
         if (direction.lengthSq() > 0) {
             direction.normalize();
-            this.setVelocity(direction.x * this.speed, direction.y * this.speed);
+            this.setVelocity(
+                direction.x * this.speed,
+                direction.y * this.speed,
+            );
 
             if (direction.x !== 0) {
                 const faceDirection = direction.x < 0 ? -1 : 1;
                 this.setVisualTransform(this.scaleFactor, faceDirection);
             }
-        }
-        else {
+        } else {
             this.setVelocity(0, 0);
         }
 
@@ -152,7 +166,9 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         }
 
         const anchorX = this.body ? this.body.center.x : this.x;
-        const anchorY = this.body ? this.body.top : (this.y - this.displayHeight / 2);
+        const anchorY = this.body
+            ? this.body.top
+            : this.y - this.displayHeight / 2;
 
         this.healthBar.setWidth(Math.abs(this.displayWidth));
         this.healthBar.updatePosition(anchorX, anchorY);
@@ -162,5 +178,4 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.healthBar.destroy();
         super.destroy(fromScene);
     }
-
 }

@@ -41,7 +41,7 @@ export class BaseStage extends Phaser.Scene {
             x: 20,
             y: 10,
             width: 1240,
-            height: 24
+            height: 24,
         };
         this.gameOverShown = false;
         this.inputDirection = new Phaser.Math.Vector2(0, 0);
@@ -55,28 +55,44 @@ export class BaseStage extends Phaser.Scene {
     preloadAssets() {}
 
     /** Texture key for the tiling background. */
-    getBackgroundTextureKey() { return 'background'; }
+    getBackgroundTextureKey() {
+        return 'background';
+    }
 
     /** Texture key for the player sprite. */
-    getPlayerTextureKey() { return 'player'; }
+    getPlayerTextureKey() {
+        return 'player';
+    }
 
     /** Texture key for bullet sprites. */
-    getBulletTextureKey() { return 'bullet'; }
+    getBulletTextureKey() {
+        return 'bullet';
+    }
 
     /** Texture key for the kills HUD icon. */
-    getKillsIconKey() { return 'kills'; }
+    getKillsIconKey() {
+        return 'kills';
+    }
 
     /** Player balance config — override to tune per-stage values. */
-    getPlayerConfig() { return GAMEPLAY.player; }
+    getPlayerConfig() {
+        return GAMEPLAY.player;
+    }
 
     /** Bullet balance config — override to tune per-stage values. */
-    getBulletsConfig() { return GAMEPLAY.bullets; }
+    getBulletsConfig() {
+        return GAMEPLAY.bullets;
+    }
 
     /** Enemy balance config — override to tune per-stage values. */
-    getEnemiesConfig() { return GAMEPLAY.enemies; }
+    getEnemiesConfig() {
+        return GAMEPLAY.enemies;
+    }
 
     /** Spawner timeline config — override to tune per-stage values. */
-    getSpawnerConfig() { return GAMEPLAY.spawner; }
+    getSpawnerConfig() {
+        return GAMEPLAY.spawner;
+    }
 
     // -------------------------------------------------------------------------
     // Phaser lifecycle
@@ -94,7 +110,11 @@ export class BaseStage extends Phaser.Scene {
         this._createInput();
         this._createHud();
 
-        this.events.on(Phaser.Scenes.Events.POST_UPDATE, this.syncHealthBars, this);
+        this.events.on(
+            Phaser.Scenes.Events.POST_UPDATE,
+            this.syncHealthBars,
+            this,
+        );
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.onShutdown, this);
     }
 
@@ -110,15 +130,13 @@ export class BaseStage extends Phaser.Scene {
 
         if (this.cursors.left.isDown || this.wasd.left.isDown) {
             direction.x -= 1;
-        }
-        else if (this.cursors.right.isDown || this.wasd.right.isDown) {
+        } else if (this.cursors.right.isDown || this.wasd.right.isDown) {
             direction.x += 1;
         }
 
         if (this.cursors.up.isDown || this.wasd.up.isDown) {
             direction.y -= 1;
-        }
-        else if (this.cursors.down.isDown || this.wasd.down.isDown) {
+        } else if (this.cursors.down.isDown || this.wasd.down.isDown) {
             direction.y += 1;
         }
 
@@ -145,8 +163,17 @@ export class BaseStage extends Phaser.Scene {
         for (const yOffset of this.blockOffsets) {
             for (const xOffset of this.blockOffsets) {
                 const block = this.add
-                    .tileSprite(0, 0, this.blockSize, this.blockSize, this.getBackgroundTextureKey())
-                    .setOrigin(0) as Phaser.GameObjects.TileSprite & { xOffset: number; yOffset: number };
+                    .tileSprite(
+                        0,
+                        0,
+                        this.blockSize,
+                        this.blockSize,
+                        this.getBackgroundTextureKey(),
+                    )
+                    .setOrigin(0) as Phaser.GameObjects.TileSprite & {
+                    xOffset: number;
+                    yOffset: number;
+                };
 
                 block.xOffset = xOffset;
                 block.yOffset = yOffset;
@@ -162,12 +189,20 @@ export class BaseStage extends Phaser.Scene {
         this.player = new Player(this, 0, 0, this.getPlayerTextureKey(), {
             speed: playerConfig.speed,
             maxHealth: playerConfig.maxHealth,
-            scaleFactor: playerConfig.scaleFactor
+            scaleFactor: playerConfig.scaleFactor,
         });
 
-        this.bulletManager = new BulletManager(this, this.getBulletsConfig(), this.getBulletTextureKey());
+        this.bulletManager = new BulletManager(
+            this,
+            this.getBulletsConfig(),
+            this.getBulletTextureKey(),
+        );
         this.enemyManager = new EnemyManager(this, this.getEnemiesConfig());
-        this.enemySpawner = new EnemySpawner(this, this.enemyManager, this.getSpawnerConfig());
+        this.enemySpawner = new EnemySpawner(
+            this,
+            this.enemyManager,
+            this.getSpawnerConfig(),
+        );
     }
 
     _createOverlaps() {
@@ -176,7 +211,7 @@ export class BaseStage extends Phaser.Scene {
             this.enemyManager.getGroup(),
             this.handleBulletEnemyOverlap,
             null,
-            this
+            this,
         );
 
         this.physics.add.overlap(
@@ -184,7 +219,7 @@ export class BaseStage extends Phaser.Scene {
             this.enemyManager.getGroup(),
             this.handlePlayerEnemyOverlap,
             null,
-            this
+            this,
         );
     }
 
@@ -199,9 +234,11 @@ export class BaseStage extends Phaser.Scene {
             up: Phaser.Input.Keyboard.KeyCodes.W,
             down: Phaser.Input.Keyboard.KeyCodes.S,
             left: Phaser.Input.Keyboard.KeyCodes.A,
-            right: Phaser.Input.Keyboard.KeyCodes.D
+            right: Phaser.Input.Keyboard.KeyCodes.D,
         });
-        this.altKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ALT);
+        this.altKey = this.input.keyboard.addKey(
+            Phaser.Input.Keyboard.KeyCodes.ALT,
+        );
     }
 
     _createHud() {
@@ -216,14 +253,18 @@ export class BaseStage extends Phaser.Scene {
             fontSize: '24px',
             color: '#ffffff',
             stroke: '#121212',
-            strokeThickness: 4
+            strokeThickness: 4,
         });
         this.timerText.setOrigin(0.5, 0);
         this.timerText.setScrollFactor(0);
         this.timerText.setDepth(1000);
         this.timerText.setResolution(1);
 
-        this.killsIcon = this.add.image(this.viewWidth - 16, 40, this.getKillsIconKey());
+        this.killsIcon = this.add.image(
+            this.viewWidth - 16,
+            40,
+            this.getKillsIconKey(),
+        );
         this.killsIcon.setOrigin(1, 0);
         this.killsIcon.setScrollFactor(0);
         this.killsIcon.setDepth(1000);
@@ -234,7 +275,7 @@ export class BaseStage extends Phaser.Scene {
             fontSize: '24px',
             color: '#ffffff',
             stroke: '#121212',
-            strokeThickness: 4
+            strokeThickness: 4,
         });
         this.killsText.setOrigin(1, 0);
         this.killsText.setScrollFactor(0);
@@ -253,7 +294,7 @@ export class BaseStage extends Phaser.Scene {
             fontSize: '22px',
             color: '#ffffff',
             stroke: '#121212',
-            strokeThickness: 4
+            strokeThickness: 4,
         });
         this.levelText.setOrigin(0.5, 0.5);
         this.levelText.setScrollFactor(0);
@@ -272,7 +313,10 @@ export class BaseStage extends Phaser.Scene {
             return false;
         }
 
-        const wasKilled = this.bulletManager.handleBulletEnemyOverlap(bullet, enemy);
+        const wasKilled = this.bulletManager.handleBulletEnemyOverlap(
+            bullet,
+            enemy,
+        );
 
         if (wasKilled) {
             this.killsCount += 1;
@@ -282,7 +326,9 @@ export class BaseStage extends Phaser.Scene {
             const typeXp = enemiesConfig.enemyTypes?.[enemy.enemyType]?.xpYield;
             const instanceXp = enemy.xpYield;
             const resolvedXp = Number.isFinite(typeXp) ? typeXp : instanceXp;
-            const xpGain = Number.isFinite(resolvedXp) ? Math.max(1, resolvedXp) : 1;
+            const xpGain = Number.isFinite(resolvedXp)
+                ? Math.max(1, resolvedXp)
+                : 1;
 
             this.player.addXp(xpGain);
             this.updateXpHud();
@@ -333,7 +379,11 @@ export class BaseStage extends Phaser.Scene {
         const centerBlockX = Math.floor(this.player.x / this.blockSize);
         const centerBlockY = Math.floor(this.player.y / this.blockSize);
 
-        if (!force && centerBlockX === this.lastCenterBlockX && centerBlockY === this.lastCenterBlockY) {
+        if (
+            !force &&
+            centerBlockX === this.lastCenterBlockX &&
+            centerBlockY === this.lastCenterBlockY
+        ) {
             return;
         }
 
@@ -361,12 +411,21 @@ export class BaseStage extends Phaser.Scene {
         const minutes = Math.floor(totalSeconds / 60);
         const seconds = totalSeconds % 60;
 
-        return String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+        return (
+            String(minutes).padStart(2, '0') +
+            ':' +
+            String(seconds).padStart(2, '0')
+        );
     }
 
     updateXpHud() {
         const currentXp = Number.isFinite(this.player.xp) ? this.player.xp : 0;
-        const nextXp = Math.max(1, Number.isFinite(this.player.xpToNextLevel) ? this.player.xpToNextLevel : 1);
+        const nextXp = Math.max(
+            1,
+            Number.isFinite(this.player.xpToNextLevel)
+                ? this.player.xpToNextLevel
+                : 1,
+        );
         const progress = Phaser.Math.Clamp(currentXp / nextXp, 0, 1);
         const bar = this.xpBarBounds;
         const innerWidth = Math.max(1, bar.width - 2);
@@ -380,7 +439,12 @@ export class BaseStage extends Phaser.Scene {
         this.xpBar.fillStyle(0x0d111a, 1);
         this.xpBar.fillRect(bar.x, bar.y, bar.width, bar.height);
         this.xpBar.fillStyle(0x11233d, 1);
-        this.xpBar.fillRect(bar.x + 1, bar.y + 1, bar.width - 2, bar.height - 2);
+        this.xpBar.fillRect(
+            bar.x + 1,
+            bar.y + 1,
+            bar.width - 2,
+            bar.height - 2,
+        );
         this.xpBar.fillStyle(0x4da3ff, 1);
         this.xpBar.fillRect(bar.x + 1, bar.y + 1, fillWidth, bar.height - 2);
 
@@ -452,9 +516,18 @@ export class BaseStage extends Phaser.Scene {
         this.collisionDebugGraphics.lineStyle(2, color, 1);
 
         if (body.isCircle) {
-            this.collisionDebugGraphics.strokeCircle(body.center.x, body.center.y, body.radius);
+            this.collisionDebugGraphics.strokeCircle(
+                body.center.x,
+                body.center.y,
+                body.radius,
+            );
         } else {
-            this.collisionDebugGraphics.strokeRect(body.x, body.y, body.width, body.height);
+            this.collisionDebugGraphics.strokeRect(
+                body.x,
+                body.y,
+                body.width,
+                body.height,
+            );
         }
     }
 
@@ -485,12 +558,15 @@ export class BaseStage extends Phaser.Scene {
     // -------------------------------------------------------------------------
 
     onShutdown() {
-        this.events.off(Phaser.Scenes.Events.POST_UPDATE, this.syncHealthBars, this);
+        this.events.off(
+            Phaser.Scenes.Events.POST_UPDATE,
+            this.syncHealthBars,
+            this,
+        );
 
         if (this.collisionDebugGraphics) {
             this.collisionDebugGraphics.destroy();
             this.collisionDebugGraphics = null;
         }
     }
-
 }

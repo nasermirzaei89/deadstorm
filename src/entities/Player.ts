@@ -6,7 +6,13 @@ import { CollidableBody } from './CollidableBody';
 export class Player extends Phaser.Physics.Arcade.Sprite {
     [key: string]: any;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, texture = 'player', options: any = {}) {
+    constructor(
+        scene: Phaser.Scene,
+        x: number,
+        y: number,
+        texture = 'player',
+        options: any = {},
+    ) {
         super(scene, x, y, texture);
 
         scene.add.existing(this);
@@ -21,16 +27,19 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.isAlive = true;
         this.level = options.levelStart ?? GAMEPLAY.player.levelStart;
         this.xp = options.xpStart ?? GAMEPLAY.player.xpStart;
-        this.xpToNextLevel = options.xpToNextLevelStart ?? GAMEPLAY.player.xpToNextLevelStart;
+        this.xpToNextLevel =
+            options.xpToNextLevelStart ?? GAMEPLAY.player.xpToNextLevelStart;
         this.xpGrowth = options.xpGrowth ?? GAMEPLAY.player.xpGrowth;
         this._bodyConfig = options.body ?? GAMEPLAY.player.body ?? null;
         this._collidableBody = new CollidableBody(this);
 
         this.healthBar = new HealthBar(scene, {
             ...GAMEPLAY.player.healthBar,
-            visible: true
+            visible: true,
         });
-        this.setVisualTransform(options.scaleFactor ?? GAMEPLAY.player.scaleFactor);
+        this.setVisualTransform(
+            options.scaleFactor ?? GAMEPLAY.player.scaleFactor,
+        );
         this.healthBar.setWidth(Math.abs(this.displayWidth));
         this.healthBar.setPercent(1);
         this.healthBar.updatePosition(this.x, this.y);
@@ -87,8 +96,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     getMuzzlePosition(out = new Phaser.Math.Vector2()) {
         if (this.body) {
             out.set(this.body.center.x, this.body.center.y);
-        }
-        else {
+        } else {
             out.set(this.x, this.y);
         }
 
@@ -127,7 +135,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         while (this.xp >= this.xpToNextLevel) {
             this.xp -= this.xpToNextLevel;
             this.level += 1;
-            this.xpToNextLevel = Math.max(1, Math.floor(this.xpToNextLevel * this.xpGrowth));
+            this.xpToNextLevel = Math.max(
+                1,
+                Math.floor(this.xpToNextLevel * this.xpGrowth),
+            );
         }
     }
 
@@ -141,7 +152,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     updateHealthBar() {
         const anchorX = this.body ? this.body.center.x : this.x;
-        const anchorY = this.body ? this.body.top : (this.y - this.displayHeight / 2);
+        const anchorY = this.body
+            ? this.body.top
+            : this.y - this.displayHeight / 2;
 
         this.healthBar.setWidth(Math.abs(this.displayWidth));
         this.healthBar.updatePosition(anchorX, anchorY);

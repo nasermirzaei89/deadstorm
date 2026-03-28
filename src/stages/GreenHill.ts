@@ -8,7 +8,6 @@ import enemy3Asset from '@/assets/enemy3.png';
 import killsAsset from '@/assets/kills.png';
 
 export class GreenHill extends BaseStage {
-
     constructor() {
         super('GreenHill');
     }

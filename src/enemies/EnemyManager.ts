@@ -14,14 +14,14 @@ export class EnemyManager {
             ...config,
             enemyTypes: {
                 ...defaults.enemyTypes,
-                ...(config.enemyTypes ?? {})
-            }
+                ...(config.enemyTypes ?? {}),
+            },
         };
 
         this.group = this.scene.physics.add.group({
             classType: Enemy,
             maxSize: this.config.maxInGame,
-            runChildUpdate: false
+            runChildUpdate: false,
         });
     }
 
@@ -66,7 +66,13 @@ export class EnemyManager {
             return null;
         }
 
-        enemy.activateFromPool(x, y, typeKey, enemyTypeConfig, showEnemyHealthBars);
+        enemy.activateFromPool(
+            x,
+            y,
+            typeKey,
+            enemyTypeConfig,
+            showEnemyHealthBars,
+        );
         return enemy;
     }
 
@@ -83,10 +89,14 @@ export class EnemyManager {
                 continue;
             }
 
-            if (enemy.x < left || enemy.x > right || enemy.y < top || enemy.y > bottom) {
+            if (
+                enemy.x < left ||
+                enemy.x > right ||
+                enemy.y < top ||
+                enemy.y > bottom
+            ) {
                 enemy.deactivateToPool();
             }
         }
     }
-
 }

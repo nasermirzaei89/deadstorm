@@ -12,7 +12,7 @@ export class BulletManager {
         this.textureKey = textureKey;
         this.config = {
             ...GAMEPLAY.bullets,
-            ...config
+            ...config,
         };
         this.nextFireAt = 0;
         this.spawnPosition = new Phaser.Math.Vector2();
@@ -20,7 +20,7 @@ export class BulletManager {
         this.group = this.scene.physics.add.group({
             classType: Bullet,
             maxSize: this.config.maxInGame,
-            runChildUpdate: false
+            runChildUpdate: false,
         });
     }
 
@@ -69,7 +69,7 @@ export class BulletManager {
                 this.config.pierce,
                 this.config.scaleFactor,
                 faceDirection,
-                this.config.body ?? null
+                this.config.body ?? null,
             );
         }
     }
@@ -106,10 +106,14 @@ export class BulletManager {
                 continue;
             }
 
-            if (bullet.x < left || bullet.x > right || bullet.y < top || bullet.y > bottom) {
+            if (
+                bullet.x < left ||
+                bullet.x > right ||
+                bullet.y < top ||
+                bullet.y > bottom
+            ) {
                 bullet.deactivateToPool();
             }
         }
     }
-
 }

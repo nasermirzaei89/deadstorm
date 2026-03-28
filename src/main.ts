@@ -13,15 +13,13 @@ const config: Phaser.Types.Core.GameConfig = {
         default: 'arcade',
         arcade: {
             gravity: { x: 0, y: 0 },
-            debug: false
-        }
+            debug: false,
+        },
     },
-    scene: [
-        GreenHill
-    ],
+    scene: [GreenHill],
     scale: {
         mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH
+        autoCenter: Phaser.Scale.CENTER_BOTH,
     },
 };
 

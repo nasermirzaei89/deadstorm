@@ -4,7 +4,13 @@ import { CollidableBody } from '@/entities/CollidableBody';
 export class Bullet extends Phaser.Physics.Arcade.Image {
     [key: string]: any;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, texture = 'bullet', frame?: string | number) {
+    constructor(
+        scene: Phaser.Scene,
+        x: number,
+        y: number,
+        texture = 'bullet',
+        frame?: string | number,
+    ) {
         super(scene, x, y, texture, frame);
 
         scene.add.existing(this);
@@ -42,14 +48,28 @@ export class Bullet extends Phaser.Physics.Arcade.Image {
         }
     }
 
-    activateFromPool(x: number, y: number, angle: number, speed: number, damage: number, pierce: number, scaleFactor = 1, faceDirection = 1, bodyConfig: any = null) {
+    activateFromPool(
+        x: number,
+        y: number,
+        angle: number,
+        speed: number,
+        damage: number,
+        pierce: number,
+        scaleFactor = 1,
+        faceDirection = 1,
+        bodyConfig: any = null,
+    ) {
         this._bodyConfig = bodyConfig;
         this.setActive(true);
         this.setVisible(true);
         this.body.enable = true;
         this.body.reset(x, y);
         this.setVisualTransform(scaleFactor, faceDirection);
-        this.scene.physics.velocityFromRotation(angle, speed, this.body.velocity);
+        this.scene.physics.velocityFromRotation(
+            angle,
+            speed,
+            this.body.velocity,
+        );
 
         this.damage = damage;
         this.pierce = pierce;
@@ -75,5 +95,4 @@ export class Bullet extends Phaser.Physics.Arcade.Image {
         this.pierce = 0;
         this.hitEnemyIds.clear();
     }
-
 }
