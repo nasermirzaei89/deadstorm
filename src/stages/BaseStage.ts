@@ -4,6 +4,8 @@ import { Player } from '@/entities/Player';
 import { BulletManager } from '@/projectiles/BulletManager';
 import { EnemyManager } from '@/enemies/EnemyManager';
 import { EnemySpawner } from '@/enemies/EnemySpawner';
+import { Bullet } from '@/projectiles/Bullet';
+import { Enemy } from '@/entities/Enemy';
 
 export class BaseStage extends Phaser.Scene {
     [key: string]: any;
@@ -41,6 +43,7 @@ export class BaseStage extends Phaser.Scene {
             width: 1240,
             height: 24
         };
+        this.gameOverShown = false;
     }
 
     // -------------------------------------------------------------------------
@@ -95,6 +98,12 @@ export class BaseStage extends Phaser.Scene {
     }
 
     update(time) {
+        if (!this.player?.isAlive) {
+            this.handleGameOver();
+            this.bulletManager?.cullOutsideCamera();
+            return;
+        }
+
         const direction = new Phaser.Math.Vector2(0, 0);
 
         if (this.cursors.left.isDown || this.wasd.left.isDown) {
@@ -256,7 +265,11 @@ export class BaseStage extends Phaser.Scene {
     // Overlap handlers
     // -------------------------------------------------------------------------
 
-    handleBulletEnemyOverlap(bullet, enemy) {
+    handleBulletEnemyOverlap(bullet: Bullet, enemy: Enemy) {
+        if (this.gameOverShown) {
+            return false;
+        }
+
         const wasKilled = this.bulletManager.handleBulletEnemyOverlap(bullet, enemy);
 
         if (wasKilled) {
@@ -284,6 +297,30 @@ export class BaseStage extends Phaser.Scene {
         if (enemy.canDamageAt(this.time.now, enemiesConfig.damageIntervalMs)) {
             player.takeDamage(enemy.damage);
         }
+    }
+
+    handleGameOver() {
+        if (this.gameOverShown) {
+            return;
+        }
+
+        this.gameOverShown = true;
+
+        if (this.player?.body) {
+            this.player.setVelocity(0, 0);
+        }
+
+        const enemies = this.enemyManager?.getGroup()?.getChildren() ?? [];
+
+        for (const enemy of enemies) {
+            if (!enemy.active || !enemy.body) {
+                continue;
+            }
+
+            enemy.setVelocity(0, 0);
+        }
+
+        window.alert('game over');
     }
 
     // -------------------------------------------------------------------------
