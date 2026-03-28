@@ -1,4 +1,11 @@
-import { BaseStage } from './BaseStage';
+import { BaseStage } from '@/stages/BaseStage';
+import groundAsset from '@/assets/ground.png';
+import playerAsset from '@/assets/player.png';
+import bulletAsset from '@/assets/bullet.png';
+import enemy1Asset from '@/assets/enemy1.png';
+import enemy2Asset from '@/assets/enemy2.png';
+import enemy3Asset from '@/assets/enemy3.png';
+import killsAsset from '@/assets/kills.png';
 
 export class GreenHill extends BaseStage {
 
@@ -6,17 +13,13 @@ export class GreenHill extends BaseStage {
         super('GreenHill');
     }
 
-    // -------------------------------------------------------------------------
-    // Stage-specific asset loading
-    // -------------------------------------------------------------------------
-
     preloadAssets() {
-        this.load.image('background', 'assets/ground.png');
-        this.load.image('player', 'assets/player.png');
-        this.load.image('bullet', 'assets/bullet.png');
-        this.load.image('enemy1', 'assets/enemy1.png');
-        this.load.image('enemy2', 'assets/enemy2.png');
-        this.load.image('enemy3', 'assets/enemy3.png');
-        this.load.image('kills', 'assets/kills.png');
+        this.load.image('background', groundAsset);
+        this.load.image('player', playerAsset);
+        this.load.image('bullet', bulletAsset);
+        this.load.image('enemy1', enemy1Asset);
+        this.load.image('enemy2', enemy2Asset);
+        this.load.image('enemy3', enemy3Asset);
+        this.load.image('kills', killsAsset);
     }
 }
