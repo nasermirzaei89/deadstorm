@@ -45,6 +45,10 @@ export class BaseStage extends Phaser.Scene {
         };
         this.gameOverShown = false;
         this.inputDirection = new Phaser.Math.Vector2(0, 0);
+        this.gameOverModal = null;
+        this.gameOverRestartButton = null;
+        this.gameOverRestartSelected = true;
+        this.gameOverRestarting = false;
     }
 
     // -------------------------------------------------------------------------
@@ -103,6 +107,10 @@ export class BaseStage extends Phaser.Scene {
     }
 
     create() {
+        this.gameOverShown = false;
+        this.gameOverRestarting = false;
+        this.gameOverRestartSelected = true;
+
         this._createMap();
         this._createEntities();
         this._createOverlaps();
@@ -239,6 +247,17 @@ export class BaseStage extends Phaser.Scene {
         this.altKey = this.input.keyboard.addKey(
             Phaser.Input.Keyboard.KeyCodes.ALT,
         );
+
+        this.input.keyboard.on(
+            'keydown-ENTER',
+            this.handleGameOverKeyboardActivate,
+            this,
+        );
+        this.input.keyboard.on(
+            'keydown-SPACE',
+            this.handleGameOverKeyboardActivate,
+            this,
+        );
     }
 
     _createHud() {
@@ -368,7 +387,121 @@ export class BaseStage extends Phaser.Scene {
             enemy.setVelocity(0, 0);
         }
 
-        window.alert('game over');
+        this.createGameOverModal();
+    }
+
+    handleGameOverKeyboardActivate() {
+        if (!this.gameOverShown || !this.gameOverRestartSelected) {
+            return;
+        }
+
+        this.restartFromGameOver();
+    }
+
+    createGameOverModal() {
+        if (this.gameOverModal) {
+            return;
+        }
+
+        const centerX = this.viewWidth / 2;
+        const centerY = this.viewHeight / 2;
+
+        const backdrop = this.add
+            .rectangle(
+                centerX,
+                centerY,
+                this.viewWidth,
+                this.viewHeight,
+                0x000000,
+                0.6,
+            )
+            .setScrollFactor(0)
+            .setDepth(3000)
+            .setInteractive();
+
+        const panel = this.add
+            .rectangle(centerX, centerY, 420, 230, 0x111827, 0.95)
+            .setScrollFactor(0)
+            .setDepth(3001)
+            .setStrokeStyle(2, 0x4b5563, 1);
+
+        const title = this.add
+            .text(centerX, centerY - 55, 'Game Over', {
+                fontFamily: 'Courier New, monospace',
+                fontSize: '42px',
+                color: '#ffffff',
+                stroke: '#000000',
+                strokeThickness: 4,
+            })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(3002);
+
+        this.gameOverRestartButton = this.add
+            .rectangle(centerX, centerY + 20, 180, 52, 0x2563eb, 1)
+            .setScrollFactor(0)
+            .setDepth(3002)
+            .setStrokeStyle(2, 0x93c5fd, 1)
+            .setInteractive({ useHandCursor: true });
+
+        const restartLabel = this.add
+            .text(centerX, centerY + 20, 'Restart', {
+                fontFamily: 'Courier New, monospace',
+                fontSize: '28px',
+                color: '#ffffff',
+            })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(3003);
+
+        const hint = this.add
+            .text(centerX, centerY + 68, 'Press Enter or Space', {
+                fontFamily: 'Courier New, monospace',
+                fontSize: '14px',
+                color: '#cbd5e1',
+            })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(3002);
+
+        this.gameOverRestartSelected = true;
+        this.gameOverRestartButton.on(
+            'pointerdown',
+            this.restartFromGameOver,
+            this,
+        );
+
+        this.gameOverModal = [
+            backdrop,
+            panel,
+            title,
+            this.gameOverRestartButton,
+            restartLabel,
+            hint,
+        ];
+    }
+
+    clearGameOverModal() {
+        if (!this.gameOverModal) {
+            return;
+        }
+
+        for (const obj of this.gameOverModal) {
+            obj.destroy();
+        }
+
+        this.gameOverModal = null;
+        this.gameOverRestartButton = null;
+    }
+
+    restartFromGameOver() {
+        if (this.gameOverRestarting) {
+            return;
+        }
+
+        this.gameOverRestarting = true;
+        this.clearGameOverModal();
+        this.scene.restart();
     }
 
     // -------------------------------------------------------------------------
@@ -558,6 +691,18 @@ export class BaseStage extends Phaser.Scene {
     // -------------------------------------------------------------------------
 
     onShutdown() {
+        this.input.keyboard.off(
+            'keydown-ENTER',
+            this.handleGameOverKeyboardActivate,
+            this,
+        );
+        this.input.keyboard.off(
+            'keydown-SPACE',
+            this.handleGameOverKeyboardActivate,
+            this,
+        );
+        this.clearGameOverModal();
+
         this.events.off(
             Phaser.Scenes.Events.POST_UPDATE,
             this.syncHealthBars,
