@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { CHARACTERS } from '@/config/characters';
 import { GAMEPLAY } from '@/config/gameplay';
 import { Player } from '@/entities/Player';
 import { EnemyManager } from '@/enemies/EnemyManager';
@@ -39,6 +40,7 @@ export class BaseStage extends Phaser.Scene {
         this.xpBar = null;
         this.levelText = null;
         this.abilityHudItems = [];
+        this.selectedCharacter = null;
         this.xpBarBounds = {
             x: 20,
             y: 10,
@@ -67,7 +69,7 @@ export class BaseStage extends Phaser.Scene {
 
     /** Texture key for the player sprite. */
     getPlayerTextureKey() {
-        return 'player';
+        return this.selectedCharacter?.textureKey ?? 'player';
     }
 
     /** Texture key for bullet sprites. */
@@ -82,7 +84,16 @@ export class BaseStage extends Phaser.Scene {
 
     /** Player balance config — override to tune per-stage values. */
     getPlayerConfig() {
-        return GAMEPLAY.player;
+        if (!this.selectedCharacter) {
+            return GAMEPLAY.player;
+        }
+
+        return {
+            ...GAMEPLAY.player,
+            speed: this.selectedCharacter.speed,
+            maxHealth: this.selectedCharacter.maxHealth,
+            abilities: [...this.selectedCharacter.abilities],
+        };
     }
 
     /** Ability balance config — override to tune per-stage values. */
@@ -111,6 +122,15 @@ export class BaseStage extends Phaser.Scene {
 
     preload() {
         this.preloadAssets();
+    }
+
+    init(data: any) {
+        const selectedCharacterId = data?.selectedCharacterId;
+        const fallback = CHARACTERS[0] ?? null;
+
+        this.selectedCharacter =
+            CHARACTERS.find((item) => item.id === selectedCharacterId) ??
+            fallback;
     }
 
     create() {
@@ -376,19 +396,12 @@ export class BaseStage extends Phaser.Scene {
     // Overlap handlers
     // -------------------------------------------------------------------------
 
-    handleAbilityEnemyOverlap(
-        ability: Ability,
-        projectile: any,
-        enemy: Enemy,
-    ) {
+    handleAbilityEnemyOverlap(ability: Ability, projectile: any, enemy: Enemy) {
         if (this.gameOverShown) {
             return false;
         }
 
-        const wasKilled = ability.handleEnemyOverlap(
-            projectile,
-            enemy,
-        );
+        const wasKilled = ability.handleEnemyOverlap(projectile, enemy);
 
         if (wasKilled) {
             this.killsCount += 1;
@@ -498,7 +511,7 @@ export class BaseStage extends Phaser.Scene {
             .setInteractive({ useHandCursor: true });
 
         const restartLabel = this.add
-            .text(centerX, centerY + 20, 'Restart', {
+            .text(centerX, centerY + 20, 'Quit', {
                 fontFamily: 'Courier New, monospace',
                 fontSize: '28px',
                 color: '#ffffff',
@@ -508,7 +521,7 @@ export class BaseStage extends Phaser.Scene {
             .setDepth(3003);
 
         const hint = this.add
-            .text(centerX, centerY + 68, 'Press Enter or Space', {
+            .text(centerX, centerY + 68, 'Press Enter/Space or Click Quit', {
                 fontFamily: 'Courier New, monospace',
                 fontSize: '14px',
                 color: '#cbd5e1',
@@ -554,7 +567,7 @@ export class BaseStage extends Phaser.Scene {
 
         this.gameOverRestarting = true;
         this.clearGameOverModal();
-        this.scene.restart();
+        this.scene.start('CharacterSelect');
     }
 
     // -------------------------------------------------------------------------
@@ -660,14 +673,8 @@ export class BaseStage extends Phaser.Scene {
                 .setDepth(hudDepth + 1);
 
             const sourceImage = icon.texture?.getSourceImage?.();
-            const textureWidth =
-                sourceImage?.width ??
-                icon.width ??
-                1;
-            const textureHeight =
-                sourceImage?.height ??
-                icon.height ??
-                1;
+            const textureWidth = sourceImage?.width ?? icon.width ?? 1;
+            const textureHeight = sourceImage?.height ?? icon.height ?? 1;
             const scale = Math.min(
                 maxIconSize / textureWidth,
                 maxIconSize / textureHeight,

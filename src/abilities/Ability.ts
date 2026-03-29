@@ -25,9 +25,16 @@ export class Ability {
     }
 
     destroy() {
-        if (this.group) {
-            this.group.clear(true, true);
-            this.group = null;
+        if (!this.group) {
+            return;
         }
+
+        // Scene transitions can destroy group internals before this hook runs.
+        // Guard clear() to avoid accessing missing children manager.
+        if (this.group.children) {
+            this.group.clear(true, true);
+        }
+
+        this.group = null;
     }
 }

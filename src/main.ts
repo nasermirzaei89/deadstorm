@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { CharacterSelect } from './stages/CharacterSelect';
 import { GreenHill } from './stages/GreenHill';
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -16,7 +17,7 @@ const config: Phaser.Types.Core.GameConfig = {
             debug: false,
         },
     },
-    scene: [GreenHill],
+    scene: [CharacterSelect, GreenHill],
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,

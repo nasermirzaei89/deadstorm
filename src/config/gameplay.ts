@@ -38,7 +38,7 @@ export const GAMEPLAY = {
         boomerang: {
             count: 1,
             cooldown: 1800,
-               shotDelayMs: 140,
+            shotDelayMs: 140,
             // Lifetime only: speed controls travel rate, duration controls active time.
             duration: 180000,
             speed: 250,
