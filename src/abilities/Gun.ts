@@ -1,35 +1,43 @@
 import Phaser from 'phaser';
 import { GAMEPLAY } from '@/config/gameplay';
-import { Bullet } from './Bullet';
+import { Ability } from '@/abilities/Ability';
 import { Enemy } from '@/entities/Enemy';
 import { Player } from '@/entities/Player';
+import { GunShot } from '@/abilities/GunShot';
 
-export class BulletManager {
+export class Gun extends Ability {
     [key: string]: any;
 
-    constructor(scene: Phaser.Scene, config = {}, textureKey = 'bullet') {
-        this.scene = scene;
-        this.textureKey = textureKey;
-        this.config = {
-            ...GAMEPLAY.bullets,
+    constructor(scene: Phaser.Scene, config: any = {}, textureKey = 'bullet') {
+        const defaults = GAMEPLAY.abilities.gun;
+        const mergedConfig = {
+            ...defaults,
             ...config,
         };
+
+        super(scene, 'Gun', mergedConfig);
+
+        this.textureKey = textureKey;
         this.nextFireAt = 0;
         this.spawnPosition = new Phaser.Math.Vector2();
 
         this.group = this.scene.physics.add.group({
-            classType: Bullet,
+            classType: GunShot,
             maxSize: this.config.maxInGame,
             runChildUpdate: false,
         });
     }
 
-    update(time, player: Player) {
+    update(time: number, player: Player) {
         if (time >= this.nextFireAt) {
             this.fireFromPlayer(player);
             this.nextFireAt = time + this.config.cooldown;
         }
 
+        this.cullOutsideCamera();
+    }
+
+    onGameOverUpdate(_time: number, _player: Player) {
         this.cullOutsideCamera();
     }
 
@@ -51,16 +59,16 @@ export class BulletManager {
                 angleOffset = -spread / 2 + t * spread;
             }
 
-            const bullet = this.group.get(spawn.x, spawn.y, this.textureKey);
+            const shot = this.group.get(spawn.x, spawn.y, this.textureKey);
 
-            if (!bullet) {
+            if (!shot) {
                 continue;
             }
 
             const shotAngle = baseAngle + angleOffset;
             const faceDirection = Math.cos(shotAngle) < 0 ? -1 : 1;
 
-            bullet.activateFromPool(
+            shot.activateFromPool(
                 spawn.x,
                 spawn.y,
                 shotAngle,
@@ -74,20 +82,20 @@ export class BulletManager {
         }
     }
 
-    handleBulletEnemyOverlap(bullet: Bullet, enemy: Enemy) {
-        if (!bullet.active || !enemy.active || !enemy.isAlive) {
+    handleEnemyOverlap(shot: GunShot, enemy: Enemy) {
+        if (!shot.active || !enemy.active || !enemy.isAlive) {
             return false;
         }
 
-        if (!bullet.canHitEnemy(enemy.enemyId)) {
+        if (!shot.canHitEnemy(enemy.enemyId)) {
             return false;
         }
 
-        bullet.markEnemyHit(enemy.enemyId);
-        const wasKilled = enemy.takeDamage(bullet.damage);
+        shot.markEnemyHit(enemy.enemyId);
+        const wasKilled = enemy.takeDamage(shot.damage);
 
-        if (bullet.pierce < 0) {
-            bullet.deactivateToPool();
+        if (shot.pierce < 0) {
+            shot.deactivateToPool();
         }
 
         return wasKilled;
@@ -101,18 +109,18 @@ export class BulletManager {
         const top = view.y - buffer;
         const bottom = view.bottom + buffer;
 
-        for (const bullet of this.group.getChildren()) {
-            if (!bullet.active) {
+        for (const shot of this.group.getChildren()) {
+            if (!shot.active) {
                 continue;
             }
 
             if (
-                bullet.x < left ||
-                bullet.x > right ||
-                bullet.y < top ||
-                bullet.y > bottom
+                shot.x < left ||
+                shot.x > right ||
+                shot.y < top ||
+                shot.y > bottom
             ) {
-                bullet.deactivateToPool();
+                shot.deactivateToPool();
             }
         }
     }

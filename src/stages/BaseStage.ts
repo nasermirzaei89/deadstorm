@@ -1,11 +1,12 @@
 import Phaser from 'phaser';
 import { GAMEPLAY } from '@/config/gameplay';
 import { Player } from '@/entities/Player';
-import { BulletManager } from '@/projectiles/BulletManager';
 import { EnemyManager } from '@/enemies/EnemyManager';
 import { EnemySpawner } from '@/enemies/EnemySpawner';
-import { Bullet } from '@/projectiles/Bullet';
 import { Enemy } from '@/entities/Enemy';
+import { Ability } from '@/abilities/Ability';
+import { Gun } from '@/abilities/Gun';
+import { Boomerang } from '@/abilities/Boomerang';
 
 export class BaseStage extends Phaser.Scene {
     [key: string]: any;
@@ -25,7 +26,7 @@ export class BaseStage extends Phaser.Scene {
         this.lastCenterBlockX = Number.NaN;
         this.lastCenterBlockY = Number.NaN;
 
-        this.bulletManager = null;
+        this.abilities = [];
         this.enemyManager = null;
         this.enemySpawner = null;
         this.collisionDebugGraphics = null;
@@ -37,6 +38,7 @@ export class BaseStage extends Phaser.Scene {
         this.killsText = null;
         this.xpBar = null;
         this.levelText = null;
+        this.abilityHudItems = [];
         this.xpBarBounds = {
             x: 20,
             y: 10,
@@ -83,14 +85,19 @@ export class BaseStage extends Phaser.Scene {
         return GAMEPLAY.player;
     }
 
-    /** Bullet balance config — override to tune per-stage values. */
-    getBulletsConfig() {
-        return GAMEPLAY.bullets;
+    /** Ability balance config — override to tune per-stage values. */
+    getAbilitiesConfig() {
+        return GAMEPLAY.abilities;
     }
 
     /** Enemy balance config — override to tune per-stage values. */
     getEnemiesConfig() {
         return GAMEPLAY.enemies;
+    }
+
+    /** Texture key for boomerang projectiles. */
+    getBoomerangTextureKey() {
+        return 'boomerang';
     }
 
     /** Spawner timeline config — override to tune per-stage values. */
@@ -129,7 +136,11 @@ export class BaseStage extends Phaser.Scene {
     update(time) {
         if (!this.player?.isAlive) {
             this.handleGameOver();
-            this.bulletManager?.cullOutsideCamera();
+
+            for (const ability of this.abilities) {
+                ability.onGameOverUpdate(time, this.player);
+            }
+
             return;
         }
 
@@ -155,7 +166,9 @@ export class BaseStage extends Phaser.Scene {
 
         this.enemySpawner.update(elapsedMs, showEnemyHealthBars);
         this.enemyManager.update(this.player, showEnemyHealthBars);
-        this.bulletManager.update(time, this.player);
+        for (const ability of this.abilities) {
+            ability.update(time, this.player);
+        }
 
         this.updateMapBlocks();
         this.updateXpHud();
@@ -198,29 +211,64 @@ export class BaseStage extends Phaser.Scene {
             speed: playerConfig.speed,
             maxHealth: playerConfig.maxHealth,
             scaleFactor: playerConfig.scaleFactor,
+            abilities: playerConfig.abilities,
         });
 
-        this.bulletManager = new BulletManager(
-            this,
-            this.getBulletsConfig(),
-            this.getBulletTextureKey(),
-        );
         this.enemyManager = new EnemyManager(this, this.getEnemiesConfig());
         this.enemySpawner = new EnemySpawner(
             this,
             this.enemyManager,
             this.getSpawnerConfig(),
         );
+
+        const abilitiesConfig = this.getAbilitiesConfig();
+        const playerAbilities = this.player.abilities ?? [];
+
+        this.abilities = [];
+
+        if (playerAbilities.includes('Gun')) {
+            this.abilities.push(
+                new Gun(
+                    this,
+                    abilitiesConfig.gun ?? {},
+                    this.getBulletTextureKey(),
+                ),
+            );
+        }
+
+        if (playerAbilities.includes('Boomerang')) {
+            this.abilities.push(
+                new Boomerang(
+                    this,
+                    this.enemyManager,
+                    abilitiesConfig.boomerang ?? {},
+                    this.getBoomerangTextureKey(),
+                ),
+            );
+        }
     }
 
     _createOverlaps() {
-        this.physics.add.overlap(
-            this.bulletManager.group,
-            this.enemyManager.getGroup(),
-            this.handleBulletEnemyOverlap,
-            null,
-            this,
-        );
+        for (const ability of this.abilities) {
+            const group = ability.getGroup();
+
+            if (!group) {
+                continue;
+            }
+
+            this.physics.add.overlap(
+                group,
+                this.enemyManager.getGroup(),
+                (projectile, enemy) =>
+                    this.handleAbilityEnemyOverlap(
+                        ability,
+                        projectile,
+                        enemy as Enemy,
+                    ),
+                null,
+                this,
+            );
+        }
 
         this.physics.add.overlap(
             this.player,
@@ -320,6 +368,7 @@ export class BaseStage extends Phaser.Scene {
         this.levelText.setDepth(1101);
         this.levelText.setResolution(1);
 
+        this.createAbilitiesHud();
         this.updateXpHud();
     }
 
@@ -327,13 +376,17 @@ export class BaseStage extends Phaser.Scene {
     // Overlap handlers
     // -------------------------------------------------------------------------
 
-    handleBulletEnemyOverlap(bullet: Bullet, enemy: Enemy) {
+    handleAbilityEnemyOverlap(
+        ability: Ability,
+        projectile: any,
+        enemy: Enemy,
+    ) {
         if (this.gameOverShown) {
             return false;
         }
 
-        const wasKilled = this.bulletManager.handleBulletEnemyOverlap(
-            bullet,
+        const wasKilled = ability.handleEnemyOverlap(
+            projectile,
             enemy,
         );
 
@@ -551,6 +604,80 @@ export class BaseStage extends Phaser.Scene {
         );
     }
 
+    getAbilityHudTextureKey(abilityName: string) {
+        if (abilityName === 'Gun') {
+            return this.getBulletTextureKey();
+        }
+
+        if (abilityName === 'Boomerang') {
+            return this.getBoomerangTextureKey();
+        }
+
+        return null;
+    }
+
+    createAbilitiesHud() {
+        for (const item of this.abilityHudItems) {
+            item.destroy();
+        }
+
+        this.abilityHudItems = [];
+
+        const abilityNames = this.player?.abilities ?? [];
+
+        if (!abilityNames.length) {
+            return;
+        }
+
+        const boxSize = 42;
+        const boxGap = 10;
+        const startX = this.xpBarBounds.x;
+        const startY = this.xpBarBounds.y + this.xpBarBounds.height + 12;
+        const hudDepth = 1100;
+        const maxIconSize = boxSize - 12;
+
+        for (let i = 0; i < abilityNames.length; i += 1) {
+            const abilityName = abilityNames[i];
+            const textureKey = this.getAbilityHudTextureKey(abilityName);
+            const centerX = startX + boxSize / 2 + i * (boxSize + boxGap);
+            const centerY = startY + boxSize / 2;
+
+            const box = this.add
+                .rectangle(centerX, centerY, boxSize, boxSize, 0x111827, 0.9)
+                .setScrollFactor(0)
+                .setDepth(hudDepth)
+                .setStrokeStyle(2, 0x4da3ff, 0.95);
+
+            this.abilityHudItems.push(box);
+
+            if (!textureKey) {
+                continue;
+            }
+
+            const icon = this.add
+                .image(centerX, centerY, textureKey)
+                .setScrollFactor(0)
+                .setDepth(hudDepth + 1);
+
+            const sourceImage = icon.texture?.getSourceImage?.();
+            const textureWidth =
+                sourceImage?.width ??
+                icon.width ??
+                1;
+            const textureHeight =
+                sourceImage?.height ??
+                icon.height ??
+                1;
+            const scale = Math.min(
+                maxIconSize / textureWidth,
+                maxIconSize / textureHeight,
+            );
+
+            icon.setScale(scale);
+            this.abilityHudItems.push(icon);
+        }
+    }
+
     updateXpHud() {
         const currentXp = Number.isFinite(this.player.xp) ? this.player.xp : 0;
         const nextXp = Math.max(
@@ -622,14 +749,16 @@ export class BaseStage extends Phaser.Scene {
             this.drawDebugBody(enemy.body, 0xff5c5c);
         }
 
-        const bullets = this.bulletManager?.group?.getChildren() ?? [];
+        for (const ability of this.abilities) {
+            const projectiles = ability?.getGroup?.()?.getChildren?.() ?? [];
 
-        for (const bullet of bullets) {
-            if (!bullet.active) {
-                continue;
+            for (const projectile of projectiles) {
+                if (!projectile.active) {
+                    continue;
+                }
+
+                this.drawDebugBody(projectile.body, 0xf7dc6f);
             }
-
-            this.drawDebugBody(bullet.body, 0xf7dc6f);
         }
     }
 
@@ -691,6 +820,12 @@ export class BaseStage extends Phaser.Scene {
     // -------------------------------------------------------------------------
 
     onShutdown() {
+        for (const ability of this.abilities) {
+            ability.destroy?.();
+        }
+
+        this.abilities = [];
+
         this.input.keyboard.off(
             'keydown-ENTER',
             this.handleGameOverKeyboardActivate,
@@ -708,6 +843,12 @@ export class BaseStage extends Phaser.Scene {
             this.syncHealthBars,
             this,
         );
+
+        for (const item of this.abilityHudItems) {
+            item.destroy();
+        }
+
+        this.abilityHudItems = [];
 
         if (this.collisionDebugGraphics) {
             this.collisionDebugGraphics.destroy();

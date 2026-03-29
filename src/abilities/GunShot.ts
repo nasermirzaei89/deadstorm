@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { CollidableBody } from '@/entities/CollidableBody';
 
-export class Bullet extends Phaser.Physics.Arcade.Image {
+export class GunShot extends Phaser.Physics.Arcade.Image {
     [key: string]: any;
 
     constructor(

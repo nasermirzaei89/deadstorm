@@ -22,6 +22,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.scaleFactor = 1;
         this.faceDirection = 1;
         this.facing = new Phaser.Math.Vector2(1, 0);
+        this.abilities = Array.isArray(options.abilities)
+            ? [...options.abilities]
+            : [...(GAMEPLAY.player.abilities ?? [])];
         this.maxHealth = options.maxHealth ?? GAMEPLAY.player.maxHealth;
         this.health = this.maxHealth;
         this.isAlive = true;
