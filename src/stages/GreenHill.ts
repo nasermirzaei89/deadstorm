@@ -3,7 +3,7 @@ import grassAsset from '@/assets/grass.png';
 import character1Asset from '@/assets/characters/character1.png';
 import character2Asset from '@/assets/characters/character2.png';
 import character3Asset from '@/assets/characters/character3.png';
-import bulletAsset from '@/assets/bullet.png';
+import arrowAsset from '@/assets/arrow.png';
 import boomerangAsset from '@/assets/boomerang.png';
 import enemy1Asset from '@/assets/enemies/enemy1.png';
 import enemy2Asset from '@/assets/enemies/enemy2.png';
@@ -21,7 +21,7 @@ export class GreenHill extends BaseStage {
         this.load.image('character1', character1Asset);
         this.load.image('character2', character2Asset);
         this.load.image('character3', character3Asset);
-        this.load.image('bullet', bulletAsset);
+        this.load.image('arrow', arrowAsset);
         this.load.image('boomerang', boomerangAsset);
         this.load.image('enemy1', enemy1Asset);
         this.load.image('enemy2', enemy2Asset);

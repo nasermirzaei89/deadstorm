@@ -6,7 +6,7 @@ import { EnemyManager } from '@/enemies/EnemyManager';
 import { EnemySpawner } from '@/enemies/EnemySpawner';
 import { Enemy } from '@/entities/Enemy';
 import { Ability } from '@/abilities/Ability';
-import { Gun } from '@/abilities/Gun';
+import { Crossbow } from '@/abilities/Crossbow';
 import { Boomerang } from '@/abilities/Boomerang';
 
 export class BaseStage extends Phaser.Scene {
@@ -72,9 +72,9 @@ export class BaseStage extends Phaser.Scene {
         return this.selectedCharacter?.textureKey ?? 'player';
     }
 
-    /** Texture key for bullet sprites. */
-    getBulletTextureKey() {
-        return 'bullet';
+    /** Texture key for arrow sprites. */
+    getArrowTextureKey() {
+        return 'arrow';
     }
 
     /** Texture key for the kills HUD icon. */
@@ -246,12 +246,12 @@ export class BaseStage extends Phaser.Scene {
 
         this.abilities = [];
 
-        if (playerAbilities.includes('Gun')) {
+        if (playerAbilities.includes('Crossbow')) {
             this.abilities.push(
-                new Gun(
+                new Crossbow(
                     this,
-                    abilitiesConfig.gun ?? {},
-                    this.getBulletTextureKey(),
+                    abilitiesConfig.crossbow ?? {},
+                    this.getArrowTextureKey(),
                 ),
             );
         }
@@ -269,6 +269,8 @@ export class BaseStage extends Phaser.Scene {
     }
 
     _createOverlaps() {
+        const enemyGroup = this.enemyManager.getGroup();
+
         for (const ability of this.abilities) {
             const group = ability.getGroup();
 
@@ -278,7 +280,7 @@ export class BaseStage extends Phaser.Scene {
 
             this.physics.add.overlap(
                 group,
-                this.enemyManager.getGroup(),
+                enemyGroup,
                 (projectile, enemy) =>
                     this.handleAbilityEnemyOverlap(
                         ability,
@@ -292,11 +294,14 @@ export class BaseStage extends Phaser.Scene {
 
         this.physics.add.overlap(
             this.player,
-            this.enemyManager.getGroup(),
+            enemyGroup,
             this.handlePlayerEnemyOverlap,
             null,
             this,
         );
+
+        // Prevent enemies from occupying the same space.
+        this.physics.add.collider(enemyGroup, enemyGroup);
     }
 
     _createCamera() {
@@ -618,8 +623,8 @@ export class BaseStage extends Phaser.Scene {
     }
 
     getAbilityHudTextureKey(abilityName: string) {
-        if (abilityName === 'Gun') {
-            return this.getBulletTextureKey();
+        if (abilityName === 'Crossbow') {
+            return this.getArrowTextureKey();
         }
 
         if (abilityName === 'Boomerang') {

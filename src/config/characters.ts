@@ -22,7 +22,7 @@ export const CHARACTERS: CharacterDefinition[] = [
         textureKey: 'character2',
         speed: 560,
         maxHealth: 95,
-        abilities: ['Gun'],
+        abilities: ['Crossbow'],
     },
     {
         id: 'wizard',
@@ -30,6 +30,6 @@ export const CHARACTERS: CharacterDefinition[] = [
         textureKey: 'character3',
         speed: 460,
         maxHealth: 140,
-        abilities: ['Gun', 'Boomerang'],
+        abilities: ['Crossbow', 'Boomerang'],
     },
 ];

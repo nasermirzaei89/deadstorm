@@ -1,14 +1,14 @@
 import Phaser from 'phaser';
 import { CollidableBody } from '@/entities/CollidableBody';
 
-export class GunShot extends Phaser.Physics.Arcade.Image {
+export class ArrowShot extends Phaser.Physics.Arcade.Image {
     [key: string]: any;
 
     constructor(
         scene: Phaser.Scene,
         x: number,
         y: number,
-        texture = 'bullet',
+        texture = 'arrow',
         frame?: string | number,
     ) {
         super(scene, x, y, texture, frame);
@@ -41,7 +41,7 @@ export class GunShot extends Phaser.Physics.Arcade.Image {
         this.scaleFactor = signedScale;
         this.faceDirection = effectiveFacing;
         this.setScale(normalizedScale, normalizedScale);
-        this.setFlipX(this.faceDirection < 0);
+        this.setFlipX(false);
 
         if (this.body) {
             this._collidableBody.apply(this._bodyConfig);
@@ -70,6 +70,7 @@ export class GunShot extends Phaser.Physics.Arcade.Image {
             speed,
             this.body.velocity,
         );
+        this.setRotation(angle);
 
         this.damage = damage;
         this.pierce = pierce;

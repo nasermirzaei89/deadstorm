@@ -3,26 +3,26 @@ import { GAMEPLAY } from '@/config/gameplay';
 import { Ability } from '@/abilities/Ability';
 import { Enemy } from '@/entities/Enemy';
 import { Player } from '@/entities/Player';
-import { GunShot } from '@/abilities/GunShot';
+import { ArrowShot } from '@/abilities/ArrowShot';
 
-export class Gun extends Ability {
+export class Crossbow extends Ability {
     [key: string]: any;
 
-    constructor(scene: Phaser.Scene, config: any = {}, textureKey = 'bullet') {
-        const defaults = GAMEPLAY.abilities.gun;
+    constructor(scene: Phaser.Scene, config: any = {}, textureKey = 'arrow') {
+        const defaults = GAMEPLAY.abilities.crossbow;
         const mergedConfig = {
             ...defaults,
             ...config,
         };
 
-        super(scene, 'Gun', mergedConfig);
+        super(scene, 'Crossbow', mergedConfig);
 
         this.textureKey = textureKey;
         this.nextFireAt = 0;
         this.spawnPosition = new Phaser.Math.Vector2();
 
         this.group = this.scene.physics.add.group({
-            classType: GunShot,
+            classType: ArrowShot,
             maxSize: this.config.maxInGame,
             runChildUpdate: false,
         });
@@ -82,7 +82,7 @@ export class Gun extends Ability {
         }
     }
 
-    handleEnemyOverlap(shot: GunShot, enemy: Enemy) {
+    handleEnemyOverlap(shot: ArrowShot, enemy: Enemy) {
         if (!shot.active || !enemy.active || !enemy.isAlive) {
             return false;
         }

@@ -3,7 +3,7 @@ import { CHARACTERS } from '@/config/characters';
 import character1Asset from '@/assets/characters/character1.png';
 import character2Asset from '@/assets/characters/character2.png';
 import character3Asset from '@/assets/characters/character3.png';
-import bulletAsset from '@/assets/bullet.png';
+import arrowAsset from '@/assets/arrow.png';
 import boomerangAsset from '@/assets/boomerang.png';
 
 export class CharacterSelect extends Phaser.Scene {
@@ -21,7 +21,7 @@ export class CharacterSelect extends Phaser.Scene {
         this.load.image('character1', character1Asset);
         this.load.image('character2', character2Asset);
         this.load.image('character3', character3Asset);
-        this.load.image('bullet', bulletAsset);
+        this.load.image('arrow', arrowAsset);
         this.load.image('boomerang', boomerangAsset);
     }
 
@@ -132,7 +132,7 @@ export class CharacterSelect extends Phaser.Scene {
             let iconX = x + 24;
 
             for (const ability of character.abilities) {
-                const key = ability === 'Gun' ? 'bullet' : 'boomerang';
+                const key = ability === 'Crossbow' ? 'arrow' : 'boomerang';
 
                 const box = this.add
                     .rectangle(
