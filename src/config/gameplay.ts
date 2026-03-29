@@ -6,7 +6,7 @@ export const GAMEPLAY = {
         speed: 500,
         maxHealth: 100,
         scaleFactor: 1,
-        abilities: ['Boomerang', 'Crossbow'],
+        abilities: ['Boomerang', 'Crossbow', 'Aura'],
         levelStart: 1,
         xpStart: 0,
         xpToNextLevelStart: 40,
@@ -51,6 +51,13 @@ export const GAMEPLAY = {
             scaleFactor: 3,
             maxInGame: 99,
             body: { shape: 'circle', radiusFactor: 0.75 },
+        },
+        aura: {
+            radius: 200,
+            damage: 10,
+            tickMs: 320,
+            color: 0x5de2ff,
+            alpha: 0.25,
         },
     },
     enemies: {

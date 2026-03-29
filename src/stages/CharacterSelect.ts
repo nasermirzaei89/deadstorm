@@ -5,6 +5,7 @@ import character2Asset from '@/assets/characters/character2.png';
 import character3Asset from '@/assets/characters/character3.png';
 import arrowAsset from '@/assets/arrow.png';
 import boomerangAsset from '@/assets/boomerang.png';
+import coinAsset from '@/assets/coin.png';
 
 export class CharacterSelect extends Phaser.Scene {
     [key: string]: any;
@@ -23,6 +24,7 @@ export class CharacterSelect extends Phaser.Scene {
         this.load.image('character3', character3Asset);
         this.load.image('arrow', arrowAsset);
         this.load.image('boomerang', boomerangAsset);
+        this.load.image('coin', coinAsset);
     }
 
     create() {
@@ -132,7 +134,12 @@ export class CharacterSelect extends Phaser.Scene {
             let iconX = x + 24;
 
             for (const ability of character.abilities) {
-                const key = ability === 'Crossbow' ? 'arrow' : 'boomerang';
+                const key =
+                    ability === 'Crossbow'
+                        ? 'arrow'
+                        : ability === 'Aura'
+                          ? 'coin'
+                          : 'boomerang';
 
                 const box = this.add
                     .rectangle(

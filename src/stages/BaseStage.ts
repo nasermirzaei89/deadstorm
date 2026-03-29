@@ -8,6 +8,7 @@ import { Enemy } from '@/entities/Enemy';
 import { Ability } from '@/abilities/Ability';
 import { Crossbow } from '@/abilities/Crossbow';
 import { Boomerang } from '@/abilities/Boomerang';
+import { Aura } from '@/abilities/Aura';
 
 export class BaseStage extends Phaser.Scene {
     [key: string]: any;
@@ -233,6 +234,7 @@ export class BaseStage extends Phaser.Scene {
             scaleFactor: playerConfig.scaleFactor,
             abilities: playerConfig.abilities,
         });
+        this.player.setDepth(20);
 
         this.enemyManager = new EnemyManager(this, this.getEnemiesConfig());
         this.enemySpawner = new EnemySpawner(
@@ -265,6 +267,10 @@ export class BaseStage extends Phaser.Scene {
                     this.getBoomerangTextureKey(),
                 ),
             );
+        }
+
+        if (playerAbilities.includes('Aura')) {
+            this.abilities.push(new Aura(this, abilitiesConfig.aura ?? {}));
         }
     }
 
@@ -629,6 +635,10 @@ export class BaseStage extends Phaser.Scene {
 
         if (abilityName === 'Boomerang') {
             return this.getBoomerangTextureKey();
+        }
+
+        if (abilityName === 'Aura') {
+            return 'coin';
         }
 
         return null;

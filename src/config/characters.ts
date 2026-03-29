@@ -30,6 +30,6 @@ export const CHARACTERS: CharacterDefinition[] = [
         textureKey: 'character3',
         speed: 460,
         maxHealth: 140,
-        abilities: ['Crossbow', 'Boomerang'],
+        abilities: ['Aura'],
     },
 ];
