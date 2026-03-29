@@ -1,13 +1,13 @@
 import { BaseStage } from '@/stages/BaseStage';
-import groundAsset from '@/assets/ground.png';
+import grassAsset from '@/assets/grass.png';
 import character1Asset from '@/assets/characters/character1.png';
 import character2Asset from '@/assets/characters/character2.png';
 import character3Asset from '@/assets/characters/character3.png';
 import bulletAsset from '@/assets/bullet.png';
 import boomerangAsset from '@/assets/boomerang.png';
-import enemy1Asset from '@/assets/enemy1.png';
-import enemy2Asset from '@/assets/enemy2.png';
-import enemy3Asset from '@/assets/enemy3.png';
+import enemy1Asset from '@/assets/enemies/enemy1.png';
+import enemy2Asset from '@/assets/enemies/enemy2.png';
+import enemy3Asset from '@/assets/enemies/enemy3.png';
 import killsAsset from '@/assets/kills.png';
 
 export class GreenHill extends BaseStage {
@@ -16,7 +16,7 @@ export class GreenHill extends BaseStage {
     }
 
     preloadAssets() {
-        this.load.image('background', groundAsset);
+        this.load.image('background', grassAsset);
         this.load.image('player', character1Asset);
         this.load.image('character1', character1Asset);
         this.load.image('character2', character2Asset);
